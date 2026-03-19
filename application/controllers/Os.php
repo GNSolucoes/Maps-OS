@@ -578,6 +578,129 @@ class Os extends MY_Controller
         redirect(site_url('os'));
     }
 
+    public function enviar_whatsapp_api()
+    {
+        if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
+            $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
+            redirect('mapos');
+        }
+
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para enviar O.S. via WhatsApp API.');
+            redirect(base_url());
+        }
+
+        $apiUrl = $_ENV['WHATICKET_API_URL'] ?? '';
+        $apiToken = $_ENV['WHATICKET_API_TOKEN'] ?? '';
+
+        if (empty($apiUrl) || empty($apiToken)) {
+            $this->session->set_flashdata('error', 'API do Whaticket não configurada. Configure no menu Configurações.');
+            redirect(site_url('os'));
+        }
+
+        $idOs = $this->uri->segment(3);
+        $this->load->model('mapos_model');
+        $this->data['result'] = $this->os_model->getById($idOs);
+
+        $zapnumber = preg_replace("/[^0-9]/", "", $this->data['result']->celular_cliente);
+        
+        if (empty($zapnumber)) {
+            $this->session->set_flashdata('error', 'O cliente não tem número de celular (WhatsApp) cadastrado.');
+            redirect(site_url('os/visualizar/') . $idOs);
+        }
+
+        $this->data['produtos'] = $this->os_model->getProdutos($idOs);
+        $this->data['servicos'] = $this->os_model->getServicos($idOs);
+        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        
+        $totalProdutos = 0;
+        $totalServico = 0;
+        if ($return = $this->os_model->valorTotalOS($idOs)) {
+            $totalServico = $return['totalServico'];
+            $totalProdutos = $return['totalProdutos'];
+        }
+
+        $texto_de_notificacao = isset($_ENV['WHATICKET_MSG_OS']) && !empty($_ENV['WHATICKET_MSG_OS']) 
+            ? base64_decode($_ENV['WHATICKET_MSG_OS']) 
+            : $this->data['configuration']['notifica_whats'];
+            
+        $troca = [
+            $this->data['result']->nomeCliente,
+            $this->data['result']->idOs,
+            $this->data['result']->status,
+            'R$ ' . ($this->data['result']->desconto != 0 && $this->data['result']->valor_desconto != 0 ? number_format($this->data['result']->valor_desconto, 2, ',', '.') : number_format($totalProdutos + $totalServico, 2, ',', '.')),
+            strip_tags($this->data['result']->descricaoProduto ?? ''),
+            ($this->data['emitente'] ? $this->data['emitente']->nome : ''),
+            ($this->data['emitente'] ? $this->data['emitente']->telefone : ''),
+            strip_tags($this->data['result']->observacoes ?? ''),
+            strip_tags($this->data['result']->defeito ?? ''),
+            strip_tags($this->data['result']->laudoTecnico ?? ''),
+            $this->data['result']->dataFinal ? date('d/m/Y', strtotime($this->data['result']->dataFinal)) : '',
+            $this->data['result']->dataInicial ? date('d/m/Y', strtotime($this->data['result']->dataInicial)) : '',
+            $this->data['result']->garantia . ' dias'
+        ];
+        $texto_de_notificacao = $this->os_model->criarTextoWhats($texto_de_notificacao, $troca);
+
+        $numero = '55' . $zapnumber;
+
+        // Create PDF
+        $this->load->helper('mpdf');
+        $this->data['custom_error'] = '';
+        if ($this->data['configuration']['pix_key']) {
+            $this->data['qrCode'] = $this->os_model->getQrCode(
+                $idOs,
+                $this->data['configuration']['pix_key'],
+                $this->data['emitente']
+            );
+            $this->data['chaveFormatada'] = $this->formatarChave($this->data['configuration']['pix_key']);
+        }
+        $this->data['imprimirAnexo'] = false;
+        
+        $html = $this->load->view('os/imprimirOs', $this->data, true);
+        
+        $temp_dir = FCPATH . 'assets/uploads/temp/';
+        if (!is_dir($temp_dir)) {
+            mkdir($temp_dir, 0777, true);
+        }
+        
+        $pdfPath = pdf_create($html, "os_" . $idOs, false);
+
+        $post = [
+            'number' => $numero,
+            'body' => $texto_de_notificacao,
+        ];
+        
+        if (file_exists($pdfPath)) {
+            $post['medias'] = new CURLFile($pdfPath, 'application/pdf', 'os_' . $idOs . '.pdf');
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, rtrim($apiUrl, '/') . '/api/messages/send');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $apiToken
+        ]);
+
+        $result = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if (file_exists($pdfPath)) {
+            unlink($pdfPath);
+        }
+
+        if ($httpcode == 200 || $httpcode == 201) {
+            $this->session->set_flashdata('success', 'Mensagem enviada com sucesso ao cliente via Whaticket API!');
+            log_info('Enviou mensagem via WhatsApp API para o cliente: ' . $this->data['result']->nomeCliente);
+        } else {
+            $this->session->set_flashdata('error', 'Falha ao enviar mensagem via Whaticket API. Erro: ' . $result);
+        }
+
+        redirect(site_url('os/visualizar/') . $idOs);
+    }
+
     private function devolucaoEstoque($id)
     {
         if ($produtos = $this->os_model->getProdutos($id)) {

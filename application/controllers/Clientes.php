@@ -92,6 +92,8 @@ class Clientes extends MY_Controller
             ];
 
             if ($this->clientes_model->add('clientes', $data) == true) {
+                $this->enviar_whatsapp_cadastro($data, $senhaCliente);
+                
                 $this->session->set_flashdata('success', 'Cliente adicionado com sucesso!');
                 log_info('Adicionou um cliente.');
                 redirect(site_url('clientes/'));
@@ -232,5 +234,55 @@ class Clientes extends MY_Controller
 
         $this->session->set_flashdata('success', 'Cliente excluido com sucesso!');
         redirect(site_url('clientes/gerenciar/'));
+    }
+
+    private function enviar_whatsapp_cadastro($cliente_data, $senha_plana)
+    {
+        $apiUrl = $_ENV['WHATICKET_API_URL'] ?? '';
+        $apiToken = $_ENV['WHATICKET_API_TOKEN'] ?? '';
+        
+        if (empty($apiUrl) || empty($apiToken)) {
+            return false;
+        }
+        
+        $zapnumber = preg_replace("/[^0-9]/", "", $cliente_data['celular']);
+        if (empty($zapnumber)) {
+            return false;
+        }
+
+        $texto_de_notificacao = isset($_ENV['WHATICKET_MSG_CADASTRO']) && !empty($_ENV['WHATICKET_MSG_CADASTRO']) 
+            ? base64_decode($_ENV['WHATICKET_MSG_CADASTRO']) 
+            : "Olá *{cliente_nome}*, seu cadastro foi efetuado.\n\nLink: {link}\nEmail: {email}\nSenha: {senha}";
+
+        $troca = [
+            '{cliente_nome}' => $cliente_data['nomeCliente'],
+            '{link}' => base_url() . 'mine',
+            '{email}' => $cliente_data['email'] ?: 'Não informado',
+            '{senha}' => $senha_plana
+        ];
+        
+        $texto_de_notificacao = str_replace(array_keys($troca), array_values($troca), $texto_de_notificacao);
+        
+        $numero = '55' . $zapnumber;
+
+        $payload = json_encode([
+            'number' => $numero,
+            'body' => $texto_de_notificacao
+        ]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, rtrim($apiUrl, '/') . '/api/messages/send');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiToken
+        ]);
+
+        curl_exec($ch);
+        curl_close($ch);
+        
+        return true;
     }
 }

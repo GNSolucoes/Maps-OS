@@ -59,7 +59,7 @@
                                 <tr>
                                     <td><?php echo $r->ordem; ?></td>
                                     <td><?php echo $r->titulo; ?></td>
-                                    <td><?php echo character_limiter($r->descricao, 50); ?></td>
+                                    <td><?php echo mb_strimwidth(strip_tags($r->descricao), 0, 50, "..."); ?></td>
                                     <td><i class="<?php echo $r->icone; ?>"></i> (<?php echo $r->icone; ?>)</td>
                                     <td><?php echo $r->ativo ? 'Sim' : 'Não'; ?></td>
                                     <td>

@@ -43,13 +43,19 @@
                                 <div class="control-group">
                                     <label for="slogan" class="control-label">Slogan</label>
                                     <div class="controls">
-                                        <input type="text" name="slogan" class="span11" value="<?php echo $config->slogan ?? ''; ?>">
+                                        <input type="text" name="slogan" class="span11" value="<?php echo htmlspecialchars($config->slogan ?? 'Sistema de Gestão de Assistência Técnica'); ?>">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="texto_inicio" class="control-label">Descrição Início (Abaixo do Slogan)</label>
+                                    <div class="controls">
+                                        <textarea name="texto_inicio" class="span11" rows="3"><?php echo htmlspecialchars(!empty($config->texto_inicio) ? $config->texto_inicio : "Simplificamos a gestão do seu negócio com tecnologia de ponta. Controle, organização e eficiência em um só lugar."); ?></textarea>
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label for="sobre" class="control-label">Sobre</label>
                                     <div class="controls">
-                                        <textarea name="sobre" class="span11" rows="5"><?php echo $config->sobre ?? ''; ?></textarea>
+                                        <textarea name="sobre" class="span11" rows="5"><?php echo htmlspecialchars(!empty($config->sobre) ? $config->sobre : "Somos uma empresa líder em soluções de tecnologia, com mais de 10 anos de mercado. Nossa missão é entregar excelência em cada reparo e serviço prestado.\n\nContamos com uma equipe de especialistas certificados e um laboratório de última geração para garantir que seu equipamento receba o melhor tratamento possível."); ?></textarea>
                                     </div>
                                 </div>
                                 
@@ -57,31 +63,31 @@
                                 <div class="control-group">
                                     <label for="telefone" class="control-label">Telefone</label>
                                     <div class="controls">
-                                        <input type="text" name="telefone" class="span11" value="<?php echo $config->telefone ?? ''; ?>">
+                                        <input type="text" name="telefone" class="span11" value="<?php echo (!empty($config->telefone) ? $config->telefone : ''); ?>">
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label for="email" class="control-label">Email</label>
                                     <div class="controls">
-                                        <input type="text" name="email" class="span11" value="<?php echo $config->email ?? ''; ?>">
+                                        <input type="text" name="email" class="span11" value="<?php echo (!empty($config->email) ? $config->email : ''); ?>">
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label for="endereco" class="control-label">Endereço</label>
                                     <div class="controls">
-                                        <textarea name="endereco" class="span11" rows="3"><?php echo $config->endereco ?? ''; ?></textarea>
+                                        <textarea name="endereco" class="span11" rows="3"><?php echo (!empty($config->endereco) ? $config->endereco : ''); ?></textarea>
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label for="mapa_iframe" class="control-label">Mapa do Google (Embed)</label>
                                     <div class="controls">
-                                        <textarea name="mapa_iframe" class="span11" rows="3" placeholder="Cole o código iframe do Google Maps aqui..."><?php echo $config->mapa_iframe ?? ''; ?></textarea>
+                                        <textarea name="mapa_iframe" class="span11" rows="3" placeholder="Cole o código iframe do Google Maps aqui..."><?php echo (!empty($config->mapa_iframe) ? $config->mapa_iframe : ''); ?></textarea>
                                     </div>
                                 </div>
                                 <div class="control-group">
                                     <label for="horario_atendimento" class="control-label">Horário</label>
                                     <div class="controls">
-                                        <input type="text" name="horario_atendimento" class="span11" value="<?php echo $config->horario_atendimento ?? ''; ?>" placeholder="Seg-Sex: 8h-18h">
+                                        <input type="text" name="horario_atendimento" class="span11" value="<?php echo (!empty($config->horario_atendimento) ? $config->horario_atendimento : ''); ?>" placeholder="Seg-Sex: 8h-18h">
                                     </div>
                                 </div>
                             </div>
@@ -95,15 +101,37 @@
                                     </div>
                                 </div>
                                 <div class="control-group">
+                                    <label for="imagem_inicio" class="control-label">Img Tema Inicial (Hero)</label>
+                                    <div class="controls">
+                                        <input type="file" name="imagem_inicio" class="span11">
+                                        <?php if(!empty($config->imagem_inicio)): ?>
+                                            <div class="span12" style="margin-left: 0; margin-top: 10px">
+                                                <img src="<?php echo base_url('uploads/site/' . $config->imagem_inicio); ?>" style="max-height: 80px; border-radius: 5px">
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="imagem_sobre" class="control-label">Img Sobre Nós</label>
+                                    <div class="controls">
+                                        <input type="file" name="imagem_sobre" class="span11">
+                                        <?php if(!empty($config->imagem_sobre)): ?>
+                                            <div class="span12" style="margin-left: 0; margin-top: 10px">
+                                                <img src="<?php echo base_url('uploads/site/' . $config->imagem_sobre); ?>" style="max-height: 80px; border-radius: 5px">
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="control-group">
                                     <label for="cor_primaria" class="control-label">Cor Primária</label>
                                     <div class="controls">
-                                        <input type="color" name="cor_primaria" value="<?php echo $config->cor_primaria ?? '#4e73df'; ?>">
+                                        <input type="color" name="cor_primaria" class="span5" style="height: 40px; padding: 2px" value="<?php echo (!empty($config->cor_primaria) ? $config->cor_primaria : '#ff9f43'); ?>">
                                     </div>
                                 </div>
                                  <div class="control-group">
                                     <label for="cor_secundaria" class="control-label">Cor Secundária</label>
                                     <div class="controls">
-                                        <input type="color" name="cor_secundaria" value="<?php echo $config->cor_secundaria ?? '#858796'; ?>">
+                                        <input type="color" name="cor_secundaria" class="span5" style="height: 40px; padding: 2px" value="<?php echo (!empty($config->cor_secundaria) ? $config->cor_secundaria : '#222f3e'); ?>">
                                     </div>
                                 </div>
 

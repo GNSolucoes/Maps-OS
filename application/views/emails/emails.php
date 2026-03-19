@@ -4,6 +4,11 @@
             <i class="fas fa-envelope"></i>
         </span>
         <h5>Lista de envio de e-mails</h5>
+        <div class="buttons">
+            <a href="<?php echo site_url('mapos/enviarEmailsPendentesAgora'); ?>" class="button btn btn-mini btn-success" style="max-width: 160px">
+              <span class="button__icon"><i class='bx bx-send'></i></span><span class="button__text2">Enviar Pendentes</span>
+            </a>
+        </div>
     </div>
     <div class="widget-content nopadding tab-content">
         <table id="tabela" class="table table-bordered ">

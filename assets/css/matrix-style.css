@@ -4312,35 +4312,45 @@ form {
 /* Sidebar Toggles */
 .sidebar-toggle {
     position: fixed; 
-    top: 5px; /* Moved up from 15px */
+    top: 5px; 
+    bottom: auto; 
     z-index: 100001; 
     color: var(--cinza0); 
-    font-size: 24px; 
+    font-size: 26px; 
     cursor: pointer; 
     background: transparent; 
     padding: 6px; 
     border-radius: 8px;
-    backdrop-filter: blur(4px);
+    box-shadow: none;
     transition: all 0.3s ease;
+}
+.sidebar-toggle i {
+    color: var(--cinza0);
 }
 .sidebar-toggle:hover {
     background: rgba(255,255,255,0.2);
-    color: #fff;
+    transform: none;
 }
 
 #mobile-nav-toggle {
+    top: 5px;
+    bottom: auto;
     left: 15px;
+    border-radius: 8px;
+    padding: 6px;
+    background: transparent;
+    box-shadow: none;
     display: none; /* Desktop default */
+}
+#mobile-nav-toggle i {
+    color: var(--cinza0);
 }
 
 #desktop-sidebar-toggle {
-    left: 280px; /* Outside sidebar (250px + margins) */
     display: flex;
-}
-
-/* Adjust based on sidebar state via JS handling or general rules */
-#sidebar.open ~ #desktop-sidebar-toggle {
-    left: 110px; /* Mini sidebar (80px + margins) */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {

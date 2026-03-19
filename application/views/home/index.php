@@ -445,8 +445,8 @@
                 <div class="col-lg-6" data-aos="fade-right">
                     <div class="hero-content">
                         <span class="badge badge-hero mb-3 px-3 py-2 rounded-pill">🚀 Sistema #1 de Gestão</span>
-                        <h1><?php echo $config->nome_empresa ?? 'Soluções Tecnológicas Inteligentes'; ?></h1>
-                        <p class="lead">Simplificamos a gestão do seu negócio com tecnologia de ponta. Controle, organização e eficiência em um só lugar.</p>
+                        <h1><?php echo $config->nome_empresa ?? 'Map-OS'; ?></h1>
+                        <p class="lead"><?php echo $config->slogan ?? 'Sistema de Gestão de Assistência Técnica'; ?></p>
                         <div class="d-flex gap-3">
                             <a href="<?php echo base_url('index.php/home/orcamento'); ?>" class="btn btn-primary-custom btn-custom shadow">Solicitar Orçamento</a>
                             <a href="#servicos" class="btn btn-outline-light-custom btn-custom">Saiba Mais</a>
@@ -465,15 +465,16 @@
                 </div>
                 <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-left">
                     <!-- Imagem de Tecnologia/SaaS Clean -->
-                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/web-development-2974925-2477356.png" alt="Tech Solutions" class="img-fluid hero-img d-block mx-auto" style="max-height: 500px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">
+                    <?php $hero_img = !empty($config->imagem_inicio) ? base_url('uploads/site/' . $config->imagem_inicio) : 'https://cdni.iconscout.com/illustration/premium/thumb/web-development-2974925-2477356.png'; ?>
+                    <img src="<?php echo $hero_img; ?>" alt="Tech Solutions" class="img-fluid hero-img d-block mx-auto" style="max-height: 500px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- WhatsApp Floating Button -->
-    <?php if ($config->whatsapp): ?>
-    <a href="https://wa.me/<?php echo $config->whatsapp; ?>" class="whatsapp-float shadow-lg" target="_blank" title="Fale conosco no WhatsApp">
+    <?php if (!empty($config->whatsapp)): ?>
+    <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $config->whatsapp); ?>" class="whatsapp-float shadow-lg" target="_blank" title="Fale conosco no WhatsApp">
         <i class='bx bxl-whatsapp'></i>
     </a>
     <?php else: ?>
@@ -571,7 +572,7 @@
             <div class="row g-4">
                 <?php 
                 // Se não houver serviços, usar fictícios para demo
-                $servicos_display = ($servicos && count($servicos) > 0) ? $servicos : [
+                $servicos_display = (!empty($servicos) && count($servicos) > 0) ? $servicos : [
                     (object)['titulo' => 'Manutenção de Hardware', 'descricao' => 'Reparo especializado em placas, troca de componentes e limpeza avançada.', 'icone' => 'bx-chip'],
                     (object)['titulo' => 'Soluções em Software', 'descricao' => 'Melhoria de desempenho, formatação e instalação de sistemas corporativos.', 'icone' => 'bx-code-alt'],
                     (object)['titulo' => 'Redes Corporativas', 'descricao' => 'Estruturação, cabeamento e configuração de servidores seguros.', 'icone' => 'bx-network-chart'],
@@ -600,14 +601,20 @@
         <div class="container py-5">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1553877607-3365b9450979?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Sobre Nós" class="img-fluid rounded-3 shadow-lg">
+                    <?php 
+                    $sobre_img_path = 'assets/img/sobre.png'; 
+                    if(!empty($config->imagem_sobre) && file_exists(FCPATH . 'uploads/site/' . $config->imagem_sobre)) {
+                        $sobre_img_path = 'uploads/site/' . $config->imagem_sobre;
+                    } 
+                    ?>
+                    <img src="<?php echo base_url($sobre_img_path); ?>" alt="Sobre Nós" class="img-fluid rounded-3 shadow-lg">
                 </div>
                 <div class="col-lg-6 ps-lg-5" data-aos="fade-left">
                     <div class="section-title text-start mb-4">
                         <span>Quem Somos</span>
                         <h2>Experts em Tecnologia e Inovação</h2>
                     </div>
-                    <?php if ($config->sobre): ?>
+                    <?php if (!empty($config->sobre)): ?>
                         <p class="lead text-muted mb-4"><?php echo nl2br($config->sobre); ?></p>
                     <?php else: ?>
                         <p class="lead text-muted mb-4">Somos uma empresa líder em soluções de tecnologia, com mais de 10 anos de mercado. Nossa missão é entregar excelência em cada reparo e serviço prestado.</p>

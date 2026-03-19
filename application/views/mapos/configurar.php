@@ -13,8 +13,8 @@
                 <li><a data-toggle="tab" href="#menu2">Produtos</a></li>
                 <li><a data-toggle="tab" href="#menu3">Notificações</a></li>
                 <li><a data-toggle="tab" href="#menu4">Atualizações</a></li>
-                <li><a data-toggle="tab" href="#menu5">OS</a></li>
                 <li><a data-toggle="tab" href="#menu6">API</a></li>
+                <li><a data-toggle="tab" href="#menu8">Whaticket API</a></li>
                 <li><a data-toggle="tab" href="#menu7">E-mail</a></li>
             </ul>
             <form action="<?php echo current_url(); ?>" id="formConfigurar" method="post" class="form-horizontal">
@@ -458,6 +458,72 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Menu Whaticket API -->
+                    <div id="menu8" class="tab-pane fade">
+                        <div class="control-group">
+                            <label for="WHATICKET_API_URL" class="control-label">URL da API (Whaticket)</label>
+                            <div class="controls">
+                                <input type="text" name="WHATICKET_API_URL" value="<?= $_ENV['WHATICKET_API_URL'] ?? '' ?>" id="WHATICKET_API_URL" class="span12" placeholder="Ex: https://api.gnvision.cloud">
+                                <span class="help-inline">Informe a URL base da sua API do Whaticket.</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="WHATICKET_API_TOKEN" class="control-label">Token da API (Bearer)</label>
+                            <div class="controls">
+                                <input type="text" name="WHATICKET_API_TOKEN" value="<?= $_ENV['WHATICKET_API_TOKEN'] ?? '' ?>" id="WHATICKET_API_TOKEN" class="span12" placeholder="Insira o seu token de acesso">
+                                <span class="help-inline">Token de autenticação para envio de mensagens.</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="WHATICKET_MSG_OS" class="control-label">Mensagem Padrão - OS</label>
+                            <div class="controls">
+                                <?php 
+                                    $defaultMsgOs = "Olá *{cliente_nome}*,\n\nA sua Ordem de Serviço nº *{os_id}* foi atualizada.\nStatus Atual: *{status}*\nValor Total: *{valor}*\n\n{descricao}\n\nSegue em anexo o documento detalhado em PDF da sua OS.\n\nObrigado pela preferência!\n{emitente_nome} - {emitente_telefone}";
+                                ?>
+                                <textarea name="WHATICKET_MSG_OS" id="WHATICKET_MSG_OS" class="span12" rows="5" placeholder="Digite sua mensagem da OS"><?= isset($_ENV['WHATICKET_MSG_OS']) && !empty($_ENV['WHATICKET_MSG_OS']) ? base64_decode($_ENV['WHATICKET_MSG_OS']) : $defaultMsgOs ?></textarea>
+                                <div class="help-inline" style="display:block; margin-top:5px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                                    <strong><i class="fas fa-info-circle"></i> Legenda de Variáveis Disponíveis:</strong><br>
+                                    <code>{cliente_nome}</code>, <code>{os_id}</code>, <code>{status}</code>, <code>{valor}</code>, <code>{descricao}</code>, <code>{defeito}</code>, <code>{observacoes}</code>, <code>{laudo}</code>, <code>{data_final}</code>, <code>{data_inicial}</code>, <code>{garantia}</code>, <code>{emitente_nome}</code>, <code>{emitente_telefone}</code>.<br><br>
+                                    <span style="color: #28a745;"><strong>✔️ PDF:</strong> O sistema automaticamente anexa e envia o arquivo PDF da O.S. (Mídia) junto com esta mensagem.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="WHATICKET_MSG_VENDA" class="control-label">Mensagem Padrão - Venda</label>
+                            <div class="controls">
+                                <?php 
+                                    $defaultMsgVenda = "Olá *{cliente_nome}*,\n\nRecebemos a sua compra!\nSua Venda nº *{venda_id}* está com o status: *{status}*.\n\nValor Total: *{valor}*\n\n{observacoes}\n\nAgradecemos a sua preferência!\n{emitente_nome} - {emitente_telefone}";
+                                ?>
+                                <textarea name="WHATICKET_MSG_VENDA" id="WHATICKET_MSG_VENDA" class="span12" rows="5" placeholder="Digite sua mensagem da Venda"><?= isset($_ENV['WHATICKET_MSG_VENDA']) && !empty($_ENV['WHATICKET_MSG_VENDA']) ? base64_decode($_ENV['WHATICKET_MSG_VENDA']) : $defaultMsgVenda ?></textarea>
+                                <div class="help-inline" style="display:block; margin-top:5px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                                    <strong><i class="fas fa-info-circle"></i> Legenda de Variáveis Disponíveis:</strong><br>
+                                    <code>{cliente_nome}</code>, <code>{venda_id}</code>, <code>{status}</code>, <code>{valor}</code>, <code>{observacoes}</code>, <code>{emitente_nome}</code>, <code>{emitente_telefone}</code>.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label for="WHATICKET_MSG_CADASTRO" class="control-label">Mensagem Padrão - Boas Vindas (Área do Cliente)</label>
+                            <div class="controls">
+                                <?php 
+                                    $defaultMsgCadastro = "Olá *{cliente_nome}*! 👋\n\nSeu cadastro foi realizado com sucesso em nosso sistema.\nAgora você tem acesso à nossa Área do Cliente para acompanhar seus serviços e histórico.\n\n*Acesse pelo Link:* {link}\n*Email:* {email}\n*Senha:* {senha}\n\nFicamos à disposição!";
+                                ?>
+                                <textarea name="WHATICKET_MSG_CADASTRO" id="WHATICKET_MSG_CADASTRO" class="span12" rows="6" placeholder="Digite sua mensagem de Boas Vindas"><?= isset($_ENV['WHATICKET_MSG_CADASTRO']) && !empty($_ENV['WHATICKET_MSG_CADASTRO']) ? base64_decode($_ENV['WHATICKET_MSG_CADASTRO']) : $defaultMsgCadastro ?></textarea>
+                                <div class="help-inline" style="display:block; margin-top:5px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                                    <strong><i class="fas fa-info-circle"></i> Legenda de Variáveis Disponíveis:</strong><br>
+                                    <code>{cliente_nome}</code>, <code>{link}</code>, <code>{senha}</code>, <code>{email}</code>.<br><br>
+                                    <span>Esta mensagem é disparada automaticamente no exato momento em que um cliente novo é criado.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="span8">
+                                <div class="span9">
+                                  <button type="submit" class="button btn btn-primary">
+                                  <span class="button__icon"><i class='bx bx-save'></i></span><span class="button__text2">Salvar Alterações</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Menu E-mail -->
                     <div id="menu7" class="tab-pane fade">
                         <div class="control-group">
@@ -503,6 +569,12 @@
                             <div class="controls">
                                 <input type="password" name="EMAIL_SMTP_PASS" value="<?= $_ENV['EMAIL_SMTP_PASS'] ?>" id="EMAIL_SMTP_PASS">
                                 <span class="help-inline">Informe a senha do e-mail.</span>
+                            </div>
+                        <div class="control-group">
+                            <label for="EMAIL_SIGNATURE" class="control-label">Assinatura de E-mail</label>
+                            <div class="controls">
+                                <textarea name="EMAIL_SIGNATURE" id="EMAIL_SIGNATURE" class="span12" rows="4" placeholder="Atenciosamente, Sua Empresa..."><?= isset($_ENV['EMAIL_SIGNATURE']) ? base64_decode($_ENV['EMAIL_SIGNATURE']) : ''; ?></textarea>
+                                <span class="help-inline">Esta assinatura será anexada ao final dos e-mails de comunicação direta. Pode conter HTML básico.</span>
                             </div>
                         </div>
                         <div class="form-actions">

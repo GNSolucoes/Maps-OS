@@ -60,7 +60,7 @@
                                     <td><?php echo $r->nome; ?></td>
                                     <td><?php echo $r->cargo; ?></td>
                                     <td><?php echo $r->avaliacao; ?>/5</td>
-                                    <td><?php echo character_limiter($r->depoimento, 50); ?></td>
+                                    <td><?php echo mb_strimwidth(strip_tags($r->depoimento), 0, 50, "..."); ?></td>
                                     <td><?php echo $r->ativo ? 'Sim' : 'Não'; ?></td>
                                     <td>
                                         <a href="<?php echo base_url('index.php/site/editarDepoimento/' . $r->id) ?>" class="btn-nwe3" title="Editar Depoimento"><i class="bx bx-edit bx-xs"></i></a>

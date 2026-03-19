@@ -34,6 +34,7 @@ class Site extends MY_Controller
             $data = [
                 'nome_empresa' => $this->input->post('nome_empresa'),
                 'slogan' => $this->input->post('slogan'),
+                'texto_inicio' => $this->input->post('texto_inicio'),
                 'sobre' => $this->input->post('sobre'),
                 'telefone' => $this->input->post('telefone'),
                 'email' => $this->input->post('email'),
@@ -50,23 +51,38 @@ class Site extends MY_Controller
                 'meta_keywords' => $this->input->post('meta_keywords'),
             ];
 
+            $uploadConfig['upload_path'] = './uploads/site/';
+            $uploadConfig['allowed_types'] = 'jpg|jpeg|png|gif|webp|svg|ico';
+            $uploadConfig['max_size'] = 5048;
+            $this->load->library('upload');
+
             // Upload logo
             if (!empty($_FILES['logo']['name'])) {
-                $config['upload_path'] = './uploads/site/';
-                $config['allowed_types'] = 'jpg|jpeg|png|gif';
-                $config['max_size'] = 2048;
-                $this->load->library('upload', $config);
+                $this->upload->initialize($uploadConfig);
                 if ($this->upload->do_upload('logo')) {
                     $data['logo'] = $this->upload->data('file_name');
                 }
             }
 
+            // Upload Imagem Início
+            if (!empty($_FILES['imagem_inicio']['name'])) {
+                $this->upload->initialize($uploadConfig);
+                if ($this->upload->do_upload('imagem_inicio')) {
+                    $data['imagem_inicio'] = $this->upload->data('file_name');
+                }
+            }
+
+            // Upload Imagem Sobre
+            if (!empty($_FILES['imagem_sobre']['name'])) {
+                $this->upload->initialize($uploadConfig);
+                if ($this->upload->do_upload('imagem_sobre')) {
+                    $data['imagem_sobre'] = $this->upload->data('file_name');
+                }
+            }
+
             // Upload favicon
             if (!empty($_FILES['favicon']['name'])) {
-                $config['upload_path'] = './uploads/site/';
-                $config['allowed_types'] = 'ico|png';
-                $config['max_size'] = 512;
-                $this->load->library('upload', $config);
+                $this->upload->initialize($uploadConfig);
                 if ($this->upload->do_upload('favicon')) {
                     $data['favicon'] = $this->upload->data('file_name');
                 }
@@ -74,10 +90,7 @@ class Site extends MY_Controller
 
             // Upload Imagem Login
             if (!empty($_FILES['imagem_login']['name'])) {
-                $config['upload_path'] = './uploads/site/';
-                $config['allowed_types'] = 'jpg|jpeg|png|gif';
-                $config['max_size'] = 2048;
-                $this->load->library('upload', $config);
+                $this->upload->initialize($uploadConfig);
                 if ($this->upload->do_upload('imagem_login')) {
                     $data['imagem_login'] = $this->upload->data('file_name');
                 }
@@ -111,7 +124,23 @@ class Site extends MY_Controller
             redirect(site_url('site/configuracoes'));
         }
 
-        $this->data['config'] = $this->site_model->getConfig();
+        $config = $this->site_model->getConfig();
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        if (!$config) {
+            $config = new stdClass();
+        }
+
+        // Se estiver vazio, tenta puxar do Emitente (configurações do sistema já preenchidas)
+        if (empty($config->nome_empresa) && $emitente) { $config->nome_empresa = $emitente->nome; }
+        if (empty($config->telefone) && $emitente) { $config->telefone = $emitente->telefone; }
+        if (empty($config->email) && $emitente) { $config->email = $emitente->email; }
+        if (empty($config->endereco) && $emitente) { 
+            $config->endereco = trim("{$emitente->rua}, {$emitente->numero} - {$emitente->bairro}, {$emitente->cidade} - {$emitente->uf}"); 
+        }
+
+        $this->data['config'] = $config;
         $this->data['view'] = 'site/configuracoes';
         return $this->layout();
     }
@@ -150,6 +179,9 @@ class Site extends MY_Controller
                 'conteudo' => $this->input->post('conteudo'),
                 'ordem' => $this->input->post('ordem') ?: 0,
                 'ativo' => $this->input->post('ativo') ? 1 : 0,
+                'meta_description' => $this->input->post('meta_description'),
+                'meta_keywords' => $this->input->post('meta_keywords'),
+                'imagem_capa' => $this->input->post('imagem_capa'),
             ];
 
             if ($this->site_model->addPagina($data)) {
@@ -183,6 +215,9 @@ class Site extends MY_Controller
                 'conteudo' => $this->input->post('conteudo'),
                 'ordem' => $this->input->post('ordem') ?: 0,
                 'ativo' => $this->input->post('ativo') ? 1 : 0,
+                'meta_description' => $this->input->post('meta_description'),
+                'meta_keywords' => $this->input->post('meta_keywords'),
+                'imagem_capa' => $this->input->post('imagem_capa'),
             ];
 
             if ($this->site_model->editPagina($id, $data)) {

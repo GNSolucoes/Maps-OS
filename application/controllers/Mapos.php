@@ -489,6 +489,70 @@ class Mapos extends MY_Controller {
         redirect(base_url() . 'index.php/mapos/emails');
     }
 
+    public function enviarEmailsPendentesAgora()
+    {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cEmail')) {
+             $this->session->set_flashdata('error', 'Sem permissão.');
+             redirect(base_url() . 'index.php/mapos/emails');
+        }
+        
+        $this->load->model('email_model');
+        $this->db->where('status', 'pending');
+        $this->db->or_where('status', 'failed');
+        $fila = $this->db->get('email_queue')->result();
+        
+        if(!$fila){
+             $this->session->set_flashdata('error', 'Nenhum email pendente na fila.');
+             redirect(base_url() . 'index.php/mapos/emails');
+        }
+
+        $this->load->library('email');
+        
+        // Configuração SMTP
+        $config['protocol'] = getenv('EMAIL_PROTOCOL');
+        $config['smtp_host'] = getenv('EMAIL_SMTP_HOST');
+        $config['smtp_user'] = getenv('EMAIL_SMTP_USER');
+        $config['smtp_pass'] = getenv('EMAIL_SMTP_PASS');
+        $config['smtp_port'] = getenv('EMAIL_SMTP_PORT');
+        $config['smtp_crypto'] = getenv('EMAIL_SMTP_CRYPTO');
+        $config['mailtype'] = 'html';
+        $config['charset'] = 'utf-8';
+        $config['newline'] = "\r\n";
+        
+        $this->email->initialize($config);
+        
+        $sucesso = 0;
+        $falhas = 0;
+
+        foreach($fila as $email) {
+            $this->email->clear(TRUE);
+            $this->email->from(getenv('EMAIL_SMTP_USER'), getenv('app_name') ?: 'Map-OS');
+            $this->email->to($email->to);
+            $this->email->subject($email->subject);
+            $this->email->message($email->message);
+            
+            if($this->email->send()){
+                 $this->email_model->edit('email_queue', ['status' => 'sent', 'date' => date('Y-m-d H:i:s')], 'id', $email->id);
+                 $sucesso++;
+            } else {
+                 $this->email_model->edit('email_queue', ['status' => 'failed', 'date' => date('Y-m-d H:i:s')], 'id', $email->id);
+                 $falhas++;
+            }
+        }
+        
+        if($falhas == 0) {
+            $this->session->set_flashdata('success', "Todos os $sucesso emails foram enviados com sucesso!");
+        } else {
+            if ($sucesso == 0) {
+                $this->session->set_flashdata('error', "Falha ao enviar os emails. $falhas falharam.");
+            } else {
+                $this->session->set_flashdata('success', "$sucesso emails enviados com sucesso. $falhas falharam.");
+            }
+        }
+        
+        redirect(base_url() . 'index.php/mapos/emails');
+    }
+
     public function configurar()
     {
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cSistema')) {
@@ -547,6 +611,12 @@ class Mapos extends MY_Controller {
                 'EMAIL_SMTP_PORT' => $this->input->post('EMAIL_SMTP_PORT'),
                 'EMAIL_SMTP_USER' => $this->input->post('EMAIL_SMTP_USER'),
                 'EMAIL_SMTP_PASS' => $this->input->post('EMAIL_SMTP_PASS'),
+                'EMAIL_SIGNATURE' => base64_encode($this->input->post('EMAIL_SIGNATURE') ?: ''),
+                'WHATICKET_API_URL' => $this->input->post('WHATICKET_API_URL'),
+                'WHATICKET_API_TOKEN' => $this->input->post('WHATICKET_API_TOKEN'),
+                'WHATICKET_MSG_OS' => base64_encode($this->input->post('WHATICKET_MSG_OS')),
+                'WHATICKET_MSG_VENDA' => base64_encode($this->input->post('WHATICKET_MSG_VENDA')),
+                'WHATICKET_MSG_CADASTRO' => base64_encode($this->input->post('WHATICKET_MSG_CADASTRO')),
             ];
 
             if (!$this->editDontEnv($dataDotEnv)) {

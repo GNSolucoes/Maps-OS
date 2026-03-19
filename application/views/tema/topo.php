@@ -79,10 +79,7 @@
         <i class='bx bx-menu'></i>
     </div>
     
-    <!-- Desktop Sidebar Toggle -->
-    <div id="desktop-sidebar-toggle" class="sidebar-toggle" title="Minimizar Menu">
-        <i class='bx bx-menu-alt-left'></i>
-    </div>
+    <!-- Desktop toggle removed from here to prevent overlapping, placed inside user-nav -->
 
     <div class="menu-backdrop"></div>
     
@@ -95,13 +92,16 @@
             });
             
             // Desktop toggle logic
-            $('#desktop-sidebar-toggle').click(function() {
+            $('#desktop-sidebar-toggle').click(function(e) {
+                 e.preventDefault();
                  $('#sidebar').toggleClass('open');
                  // Adjust content margin
                  if($('#sidebar').hasClass('open')) {
-                     $('#content').css('margin-left', '90px'); 
+                     $('#content').css('margin-left', '250px'); 
+                     $('.navebarn').css('margin-left', '250px'); 
                  } else {
-                     $('#content').css('margin-left', '250px');
+                     $('#content').css('margin-left', '90px');
+                     $('.navebarn').css('margin-left', '86px');
                  }
             });
             
@@ -122,6 +122,10 @@
 
       if ($permissaoNome != 'Técnico' && $permissaoNome != 'Tecnico') { ?>
       <ul class="nav">
+        <!-- Desktop Sidebar Toggle inside nav -->
+        <li class="dropdown" id="desktop-sidebar-toggle">
+            <a href="#" title="Minimizar Menu"><i class='bx bx-menu-alt-left iconN'></i></a>
+        </li>
         <li class="dropdown">
           <a href="#" class="tip-right dropdown-toggle" data-toggle="dropdown" title="Perfis"><i class='bx bx-user-circle iconN'></i><span class="text"></span></a>
           <ul class="dropdown-menu">
@@ -212,107 +216,174 @@
   <!--close-top-serch-->
 
 <style>
+    /* Improved Top Buttons Accessibility & Colors */
+    #user-nav .nav {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 8px; /* Space between buttons */
+    }
+    #user-nav .nav > li > a {
+        padding: 10px 14px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px; /* Modern rounded corners */
+        background-color: #3b3f5c; /* Nice dark/blueish color for the buttons */
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #user-nav .nav > li > a:hover {
+        background-color: #272a3e !important; /* Darker on hover */
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    #user-nav .nav > li > a i.iconN {
+        font-size: 22px !important;
+        color: #ffffff !important; /* White icons inside the dark buttons */
+        text-shadow: none; /* Removed the previous text-shadow */
+    }
+    
     /* Flexible Search Bar Styles */
     #top-search-bar {
         position: absolute;
-        top: 10px;
-        right: 250px; /* Adjust based on user menu width */
+        top: 8px;
+        right: 280px;
         width: 0;
-        height: 40px;
+        height: 45px;
         background: #fff;
-        border-radius: 20px;
-        transition: width 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        border-radius: 25px;
+        transition: width 0.4s ease-in-out, opacity 0.4s ease-in-out, box-shadow 0.3s;
         overflow: hidden;
         z-index: 999;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        display: flex;
-        align-items: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         opacity: 0;
     }
     #top-search-bar.active {
-        width: 300px;
+        width: 320px;
         opacity: 1;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+    #form-search-top {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        margin: 0;
         padding-left: 15px;
     }
     #top-search-input {
         border: none;
         background: transparent;
         height: 100%;
-        width: 80%;
+        flex-grow: 1; /* Automatically take up remaining space */
+        min-width: 0; /* Important for flex child inputs */
         font-size: 16px;
         outline: none;
         color: #333;
+        box-shadow: none; /* remove bootstrap default inset box-shadow */
+        margin: 0;
+        padding: 0;
+    }
+    #top-search-input:focus {
+        border: none;
+        box-shadow: none;
     }
     #top-search-bar button {
         background: none;
         border: none;
         cursor: pointer;
-        font-size: 18px;
+        font-size: 20px;
         height: 100%;
-        width: 20%;
-        color: #666;
+        width: 45px; /* Fixed width for the button area */
+        color: #555;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+    #top-search-bar button:hover {
+        color: #3b3f5c; /* Match button color */
     }
     #top-search-results {
         position: absolute;
-        top: 45px;
+        top: 55px;
         left: 0;
         width: 100%;
         background: #fff;
         border: 1px solid #ddd;
-        border-radius: 0 0 5px 5px;
+        border-radius: 8px;
         max-height: 300px;
         overflow-y: auto;
         display: none;
         z-index: 1000;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     .search-result-item {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
         cursor: pointer;
         display: block;
         color: #333;
         text-decoration: none;
+        transition: background 0.2s;
     }
     .search-result-item:hover {
-        background: #f9f9f9;
+        background: #f4f6f9;
         color: #000;
         text-decoration: none;
     }
     .search-result-item small {
         color: #888;
         display: block;
+        font-size: 12px;
+        margin-top: 3px;
     }
     
     @media (max-width: 768px) {
+        #user-nav .nav {
+            gap: 4px;
+        }
+        #user-nav .nav > li > a {
+            padding: 8px 10px !important;
+        }
         #top-search-bar {
-            right: 60px;
+            right: 80px;
             top: 5px;
+            height: 40px;
         }
         #top-search-bar.active {
-            width: 70%;
+            width: calc(100% - 100px);
+            max-width: 350px;
         }
     }
 
     /* Fix visibility for dropdowns and icons */
     .dropdown-menu {
         background-color: #fff !important;
-        border: 1px solid #ddd !important;
-        z-index: 100005 !important; /* Ensure on top of glass sidebar */
+        border: 1px solid #eee !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        z-index: 100005 !important;
+        padding: 5px 0 !important;
     }
     .dropdown-menu li a {
-        color: #333 !important;
+        color: #444 !important;
+        padding: 10px 20px !important;
+        transition: background 0.2s;
     }
     .dropdown-menu li a:hover {
-        background-color: #eee !important;
+        background-color: #f8f9fa !important;
+        color: #000 !important;
     }
     #user-nav > ul > li > a > i {
-        color: #fff !important; /* Force white or high contrast if header is dark */
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        /* Already styled above, remove conflict */
     }
     /* If header is light, flip this */
     .navbar-inverse .nav > li > a {
-        color: #e0e0e0 !important;
+        /* Already styled above, remove conflict */
     }
 </style>
 

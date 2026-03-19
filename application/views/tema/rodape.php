@@ -33,8 +33,9 @@
                     <p><strong>Contato:</strong></p>
                     <p>
                         <a href="https://wa.me/5548996046486" target="_blank" class="btn btn-mini btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        <a href="https://t.me/+_Zht4nhws0UzNTMx" target="_blank" class="btn btn-mini btn-info"><i class="fab fa-telegram"></i> Telegram</a>
                         <a href="https://www.gnsolucoesinfo.com" target="_blank" class="btn btn-mini btn-info"><i class="fas fa-globe"></i> Site</a>
-</p>
+                    </p>
                     <p>Esta versão contém modificações exclusivas e melhorias visuais desenvolvidas pela GNSOLUCOES.</p>
                 </div>
             </div>

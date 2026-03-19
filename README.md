@@ -8,8 +8,11 @@ Diferente da versão gratuita, aqui você leva um pacote de funcionalidades pron
 - ✅ **Módulo de Equipamentos**: Controle detalhado do patrimônio e itens em manutenção.
 - ✅ **PDV (Frente de Caixa)**: Venda rápida e integrada ao estoque.
 - ✅ **Painel do Técnico**: Interface dedicada para sua equipe focar no serviço.
-- ✅ **Site próprio com personalização**
+- ✅ **Site Integrado com CMS**: Editor Rico (Word style), SEO automático e gerenciamento de Banners.
 - ✅ **Gestão de Compras**: Controle o que entra na empresa, não apenas o que sai.
+- ✅ **Comunicador Duplo**: Disparo de E-mails via SMTP e WhatsApp (via API do Whaticket) na mesma tela.
+- ✅ **Anexos Ilimitados**: Envio de imagens (JPG/PNG) e PDFs para seus clientes perfeitamente integrado.
+- ✅ **Gestão de Perfil**: Assinaturas de E-mail ricas e imagens do perfil ajustáveis.
 
 #
 ## Telas do Sistema
@@ -27,13 +30,10 @@ Diferente da versão gratuita, aqui você leva um pacote de funcionalidades pron
   <br><br>
   <img src="imgs/nOIZ5FhhBuqENgpl5IY9.jpeg" alt="Imagem 6" width="100%">
 </p>
+### Participe da Nossa Comunidade
 
-### Atualização via sistema
-
-1. Primeiro é necessário atualizar manualmente o sistema para a versão v4.4.0;
-2. Quando estiver nessa versão é possível atualizar o sistema clicando no botão "Atualizar Mapos" em Sistema >> Configurações;
-3. Serão baixados e atualizados todos os arquivos exceto: `config.php`, `database.php` e `email.php`;
-
+Entre em nosso **Novo Canal** no Telegram para novidades exclusivas, atualizações e suporte direto:
+👉 [**Acessar Novo Canal do Telegram GNSoluções**](https://t.me/+_Zht4nhws0UzNTMx) 👈
 ### Frameworks/Bibliotecas
 * [bcit-ci/CodeIgniter](https://github.com/bcit-ci/CodeIgniter)
 * [twbs/bootstrap](https://github.com/twbs/bootstrap)

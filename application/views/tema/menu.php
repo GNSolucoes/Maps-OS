@@ -231,6 +231,16 @@
                         </a>
                     </li>
                 <?php } ?>
+                <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
+                    <li class="<?php if (isset($menuComunicacao)) {
+                        echo 'active';
+                    }; ?>">
+                        <a class="tip-bottom" title="" href="<?= site_url('comunicacao') ?>"><i class='bx bx-message-rounded-dots iconX'></i>
+                            <span class="title">Comunicação</span>
+                            <span class="title-tooltip">Comunicação</span>
+                        </a>
+                    </li>
+                <?php } ?>
                 
                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCobranca')) { ?>
                     <li class="<?php if (isset($menuCobrancas)) {

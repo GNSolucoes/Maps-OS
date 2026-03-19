@@ -20,15 +20,22 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">Ordem</label>
+                        <label class="control-label">Palavras-chave (SEO)</label>
                         <div class="controls">
-                            <input type="number" name="ordem" value="0">
+                            <input type="text" name="meta_keywords" class="span8" placeholder="ex: assistencia, conserto, redes">
+                            <span class="help-block">Separadas por vírgula.</span>
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">Ativo</label>
+                        <label class="control-label">Descrição Breve (SEO)</label>
                         <div class="controls">
-                            <input type="checkbox" name="ativo" value="1" checked>
+                            <input type="text" name="meta_description" class="span8" placeholder="Resumo do conteúdo desta página...">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">URL da Imagem de Capa</label>
+                        <div class="controls">
+                            <input type="text" name="imagem_capa" class="span8" placeholder="URL de uma imagem ilustrativa (Opcional)">
                         </div>
                     </div>
                 </div>
@@ -47,6 +54,28 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('textarea[name="conteudo"]').summernote({
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        });
+    });
+</script>
         </div>
     </div>
 </div>

@@ -35,6 +35,18 @@
                             </div>
                         </div>
 
+                        <?php 
+                        $zapnumber = preg_replace("/[^0-9]/", "", $result->celular);
+                        if (!empty($zapnumber)) {
+                            // Link via API Whaticket (mesma lógica)
+                            if(!empty($_ENV['WHATICKET_API_URL']) && !empty($_ENV['WHATICKET_API_TOKEN'])) {
+                                echo '<a title="Enviar via Whaticket API" class="button btn btn-mini btn-info" id="enviarWhatsAppApi" href="'.site_url().'/vendas/enviar_whatsapp_api/'.$result->idVendas.'">
+                                    <span class="button__icon"><i class="bx bx-send"></i></span> <span class="button__text">Whats API</span>
+                                </a>';
+                            }
+                        }
+                        ?>
+
                         <a href="#modal-gerar-pagamento" id="btn-forma-pagamento" role="button" data-toggle="modal" class="button btn btn-mini btn-primary">
                             <span class="button__icon"><i class='bx bx-dollar'></i></span><span class="button__text">Gerar Pagamento</span>
                         </a>

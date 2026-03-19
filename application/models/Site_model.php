@@ -16,7 +16,14 @@ class Site_model extends CI_Model
     public function updateConfig($data)
     {
         $this->db->where('id', 1);
-        return $this->db->update('site_config', $data);
+        $q = $this->db->get('site_config');
+        if ($q->num_rows() > 0) {
+            $this->db->where('id', 1);
+            return $this->db->update('site_config', $data);
+        } else {
+            $data['id'] = 1;
+            return $this->db->insert('site_config', $data);
+        }
     }
 
     // ========== PÁGINAS ==========

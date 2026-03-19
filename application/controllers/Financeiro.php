@@ -604,6 +604,101 @@ class Financeiro extends MY_Controller
         }
     }
 
+    public function enviar_whatsapp_api()
+    {
+        if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
+            $this->session->set_flashdata('error', 'Item não pode ser encontrado.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar lançamentos.');
+            redirect(base_url());
+        }
+
+        $apiUrl = $_ENV['WHATICKET_API_URL'] ?? '';
+        $apiToken = $_ENV['WHATICKET_API_TOKEN'] ?? '';
+
+        if (empty($apiUrl) || empty($apiToken)) {
+            $this->session->set_flashdata('error', 'API do Whaticket não configurada. Configure no menu Configurações.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        $idLancamento = $this->uri->segment(3);
+        $lancamento = $this->financeiro_model->getById($idLancamento);
+
+        if (!$lancamento) {
+            $this->session->set_flashdata('error', 'Lançamento não encontrado.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        if (empty($lancamento->clientes_id)) {
+            $this->session->set_flashdata('error', 'O lançamento não possui cliente associado.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        $this->load->model('clientes_model');
+        $cliente = $this->clientes_model->getById($lancamento->clientes_id);
+
+        if (!$cliente) {
+            $this->session->set_flashdata('error', 'Cliente não encontrado.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        $zapnumber = preg_replace("/[^0-9]/", "", $cliente->celular);
+
+        if (empty($zapnumber)) {
+            $this->session->set_flashdata('error', 'O cliente não tem número de celular (WhatsApp) cadastrado.');
+            redirect(site_url('financeiro/lancamentos'));
+        }
+
+        $this->load->model('mapos_model');
+        $emitente = $this->mapos_model->getEmitente();
+
+        $vencimento_str = $lancamento->data_vencimento ? date('d/m/Y', strtotime($lancamento->data_vencimento)) : 'Não informado';
+        $valor = $lancamento->valor_desconto > 0 ? $lancamento->valor_desconto : $lancamento->valor;
+
+        $texto_de_notificacao = "Olá " . $cliente->nomeCliente . ",\nReferente a: *" . strip_tags($lancamento->descricao) . "*\n\n";
+        $texto_de_notificacao .= "Vencimento: *" . $vencimento_str . "*\n";
+        $texto_de_notificacao .= "Valor: *R$ " . number_format($valor, 2, ',', '.') . "*\n";
+        $texto_de_notificacao .= "Status: *" . ($lancamento->baixado ? 'Pago' : 'Pendente') . "*\n";
+
+        if ($emitente) {
+            $texto_de_notificacao .= "\n*" . $emitente->nome . "*";
+            if ($emitente->telefone) $texto_de_notificacao .= " - " . $emitente->telefone;
+        }
+
+        $numero = '55' . $zapnumber;
+
+        $payload = json_encode([
+            'number' => $numero,
+            'body' => $texto_de_notificacao
+        ]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, rtrim($apiUrl, '/') . '/api/messages/send');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiToken
+        ]);
+
+        $result = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpcode == 200 || $httpcode == 201) {
+            $this->session->set_flashdata('success', 'Mensagem enviada com sucesso ao cliente via Whaticket API!');
+            log_info('Enviou mensagem de cobrança via WhatsApp API para o cliente: ' . $cliente->nomeCliente);
+        } else {
+            $this->session->set_flashdata('error', 'Falha ao enviar mensagem de cobrança via Whaticket API. Erro: ' . $result);
+        }
+
+        redirect(site_url('financeiro/lancamentos'));
+    }
+
     public function autoCompleteClienteAddReceita()
     {
         if (isset($_GET['term'])) {

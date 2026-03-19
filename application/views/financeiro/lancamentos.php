@@ -233,6 +233,9 @@ $periodo = $this->input->get('periodo');
                             if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
                                 echo '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $r->idLancamentos . '" class="btn-nwe4 excluir" title="Excluir OS"><i class="bx bx-trash-alt"></i></a>';
                             }
+                            if(!empty($_ENV['WHATICKET_API_URL']) && !empty($_ENV['WHATICKET_API_TOKEN']) && $r->clientes_id) {
+                                echo '<a href="'.site_url('financeiro/enviar_whatsapp_api/').$r->idLancamentos.'" class="btn-nwe2" title="Enviar via Whaticket API" style="margin-left: 1%"><i class="bx bx-send"></i></a>';
+                            }
 
                             echo '</td>';
                             echo '</tr>';

@@ -23,6 +23,64 @@
     <div></div>
 </div>
 
+<style>
+/* Improved Modern Action Cards Colors & Look */
+ul.cardBox .card {
+    border: none !important;
+    border-radius: 12px !important;
+    color: #222 !important;
+    /* Do not override display: flex/grid or padding heavily, respect matrix-style.css wrapper layout */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    padding: 22px !important;
+}
+ul.cardBox .card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+}
+
+ul.cardBox .card:nth-child(1) { background: linear-gradient(135deg, #7ab3fc 0%, #a1c4fd 100%) !important; }
+ul.cardBox .card:nth-child(2) { background: linear-gradient(135deg, #fcbd73 0%, #fbd5a9 100%) !important; }
+ul.cardBox .card:nth-child(3) { background: linear-gradient(135deg, #31d5c4 0%, #6ce2d5 100%) !important; }
+ul.cardBox .card:nth-child(4) { background: linear-gradient(135deg, #f7709a 0%, #f99fbf 100%) !important; }
+ul.cardBox .card:nth-child(5) { background: linear-gradient(135deg, #3acb93 0%, #67deb0 100%) !important; }
+ul.cardBox .card:nth-child(6) { background: linear-gradient(135deg, #fccc4b 0%, #fde28e 100%) !important; }
+
+ul.cardBox .card a { color: #111 !important; text-decoration: none !important; }
+ul.cardBox .card .numbers { 
+    font-weight: 700 !important; 
+    font-size: 20px !important; 
+    margin-bottom: 2px !important;
+    color: #111 !important;
+    text-transform: capitalize !important;
+}
+/* Prevent text truncation in cards by overriding matrix-style.css */
+ul.cardBox .card .N-tittle {
+    max-width: 100% !important; /* Fix for 'Orde...' and 'Lanç...' */
+    overflow: visible !important;
+}
+ul.cardBox .card .cardName { 
+    font-size: 13px !important; 
+    font-weight: 500 !important; 
+    color: #333 !important; 
+}
+ul.cardBox .card [class^="lord-icon"] {
+    background: rgba(255, 255, 255, 0.35) !important;
+    border-radius: 12px !important;
+    width: 55px !important;
+    height: 55px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important; /* Override standard padding */
+}
+ul.cardBox .card [class^="lord-icon"] i {
+    font-size: 30px !important;
+    color: #111 !important;
+    margin: 0 !important;
+}
+</style>
+
 <!--Action boxes-->
 <ul class="cardBox">
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) : ?>
@@ -583,6 +641,166 @@ document.addEventListener('DOMContentLoaded', function() {
 } ?>
 </div>
 </div>
+
+<!-- Start Novos Graficos (OS e Inadimplencia) -->
+<?php
+// Preparar dados reais de OS
+$grafico_os_aberto = 0; $grafico_os_orcamento = 0; $grafico_os_aprovado = 0;
+$grafico_os_finalizado = 0; $grafico_os_aguardando = 0; $grafico_os_andamento = 0;
+if (isset($os) && is_array($os)) {
+    foreach ($os as $o) {
+        if ($o->status == 'Aberto') { $grafico_os_aberto = $o->total; }
+        if ($o->status == 'Orçamento') { $grafico_os_orcamento = $o->total; }
+        if ($o->status == 'Aprovado') { $grafico_os_aprovado = $o->total; }
+        if ($o->status == 'Finalizado') { $grafico_os_finalizado = $o->total; }
+        if ($o->status == 'Aguardando Peças') { $grafico_os_aguardando = $o->total; }
+        if ($o->status == 'Em Andamento') { $grafico_os_andamento = $o->total; }
+    }
+}
+?>
+<div class="row-fluid" style="margin-top: 20px;">
+    <!-- Gráfico de OS -->
+    <div class="span6">
+        <div class="widget-box0 widbox-blak" style="padding: 15px; border-radius: 10px;">
+            <div class="widget-title2">
+                <h5 class="cardHeader" style="margin: 0 0 15px 0;"><i class='bx bx-pie-chart-alt-2'></i> Status de Ordens de Serviço (Geral)</h5>
+            </div>
+            <div class="widget-content" style="padding: 10px; display: flex; justify-content: center;">
+               <div style="position: relative; height: 320px; width: 100%; max-width: 600px;">
+                   <canvas id="graficoOSStatus"></canvas>
+               </div>
+            </div>
+        </div>
+    </div>
+    <!-- Novo Gráfico de Inadimplência -->
+    <div class="span6">
+        <div class="widget-box0 widbox-blak" style="padding: 15px; border-radius: 10px;">
+            <div class="widget-title2">
+                <h5 class="cardHeader" style="margin: 0 0 15px 0;"><i class='bx bx-line-chart'></i> Recebido vs Inadimplência (Ano Atual)</h5>
+            </div>
+            <div class="widget-content" style="padding: 10px; display: flex; justify-content: center;">
+               <div style="position: relative; height: 320px; width: 100%; max-width: 600px;">
+                   <canvas id="graficoInadimplencia"></canvas>
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Grafico de OS
+        var OSctx = document.getElementById('graficoOSStatus');
+        if (OSctx) {
+            new Chart(OSctx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Em Aberto', 'Em Orçamento', 'Aprovadas', 'Finalizadas', 'Aguardando Peças', 'Em Andamento'],
+                    datasets: [{
+                        data: [
+                            <?= $grafico_os_aberto ?>,
+                            <?= $grafico_os_orcamento ?>,
+                            <?= $grafico_os_aprovado ?>,
+                            <?= $grafico_os_finalizado ?>,
+                            <?= $grafico_os_aguardando ?>,
+                            <?= $grafico_os_andamento ?>
+                        ],
+                        backgroundColor: [
+                            '#00cd00', /* Aberto */
+                            '#CDB380', /* Orcamento */
+                            '#808080', /* Aprovado */
+                            '#113a52', /* Finalizado */
+                            '#FF7F00', /* Aguardando */
+                            '#436eee'  /* Andamento */
+                        ],
+                        borderWidth: 2,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { position: "right", labels: { font: { size: 12 } } },
+                        tooltip: { callbacks: { label: function(context) { return ' ' + context.label + ': ' + context.parsed + ' OS(s)'; } } }
+                    }
+                }
+            });
+        }
+
+        // Grafico Inadimplencia
+        var InadimCtx = document.getElementById('graficoInadimplencia');
+        if (InadimCtx) {
+            new Chart(InadimCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    datasets: [
+                        {
+                            label: 'Recebido',
+                            data: [
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_JAN_REC == null ? 0 : $financeiro_mes->VALOR_JAN_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_FEV_REC == null ? 0 : $financeiro_mes->VALOR_FEV_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_MAR_REC == null ? 0 : $financeiro_mes->VALOR_MAR_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_ABR_REC == null ? 0 : $financeiro_mes->VALOR_ABR_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_MAI_REC == null ? 0 : $financeiro_mes->VALOR_MAI_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_JUN_REC == null ? 0 : $financeiro_mes->VALOR_JUN_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_JUL_REC == null ? 0 : $financeiro_mes->VALOR_JUL_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_AGO_REC == null ? 0 : $financeiro_mes->VALOR_AGO_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_SET_REC == null ? 0 : $financeiro_mes->VALOR_SET_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_OUT_REC == null ? 0 : $financeiro_mes->VALOR_OUT_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_NOV_REC == null ? 0 : $financeiro_mes->VALOR_NOV_REC) : 0 ?>,
+                                <?= isset($financeiro_mes) ? ($financeiro_mes->VALOR_DEZ_REC == null ? 0 : $financeiro_mes->VALOR_DEZ_REC) : 0 ?>
+                            ],
+                            borderColor: '#3acb93',
+                            backgroundColor: 'rgba(58, 203, 147, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Pendente (Inadimplência)',
+                            data: [
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_JAN_REC == null ? 0 : $financeiro_mesinadipl->VALOR_JAN_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_FEV_REC == null ? 0 : $financeiro_mesinadipl->VALOR_FEV_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_MAR_REC == null ? 0 : $financeiro_mesinadipl->VALOR_MAR_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_ABR_REC == null ? 0 : $financeiro_mesinadipl->VALOR_ABR_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_MAI_REC == null ? 0 : $financeiro_mesinadipl->VALOR_MAI_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_JUN_REC == null ? 0 : $financeiro_mesinadipl->VALOR_JUN_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_JUL_REC == null ? 0 : $financeiro_mesinadipl->VALOR_JUL_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_AGO_REC == null ? 0 : $financeiro_mesinadipl->VALOR_AGO_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_SET_REC == null ? 0 : $financeiro_mesinadipl->VALOR_SET_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_OUT_REC == null ? 0 : $financeiro_mesinadipl->VALOR_OUT_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_NOV_REC == null ? 0 : $financeiro_mesinadipl->VALOR_NOV_REC) : 0 ?>,
+                                <?= isset($financeiro_mesinadipl) ? ($financeiro_mesinadipl->VALOR_DEZ_REC == null ? 0 : $financeiro_mesinadipl->VALOR_DEZ_REC) : 0 ?>
+                            ],
+                            borderColor: '#f7709a',
+                            backgroundColor: 'rgba(247, 112, 154, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { position: "top", labels: { font: { size: 12 } } },
+                        tooltip: { callbacks: { label: function(context) { return ' ' + context.dataset.label + ': R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2}); } } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return 'R$ ' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+<!-- /Fim Novos Graficos (OS e Inadimplencia) -->
 
 <!-- Start Staus OS -->
 <div class="span12A" style="margin-left: 0">

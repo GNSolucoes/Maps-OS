@@ -336,7 +336,7 @@ class Vendas extends MY_Controller
         $this->vendas_model->delete('itens_de_vendas', 'vendas_id', $id);
         $this->vendas_model->delete('vendas', 'idVendas', $id);
         if ((int) $venda->faturado === 1) {
-            $this->vendas_model->delete('lancamentos', 'descricao', "Fatura de Venda - #${id}");
+            $this->vendas_model->delete('lancamentos', 'descricao', "Fatura de Venda - #{$id}");
         }
 
         log_info('Removeu uma venda. ID: ' . $id);
@@ -692,6 +692,96 @@ class Vendas extends MY_Controller
             return '(' . substr($chave, 0, 2) . ') ' . substr($chave, 2, 5) . '-' . substr($chave, 7);
         }
         return $chave;
+    }
+
+    public function enviar_whatsapp_api()
+    {
+        if (! $this->uri->segment(3) || ! is_numeric($this->uri->segment(3))) {
+            $this->session->set_flashdata('error', 'Item não pode ser encontrado, parâmetro não foi passado corretamente.');
+            redirect('mapos');
+        }
+
+        if (! $this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para visualizar vendas.');
+            redirect(base_url());
+        }
+
+        $apiUrl = $_ENV['WHATICKET_API_URL'] ?? '';
+        $apiToken = $_ENV['WHATICKET_API_TOKEN'] ?? '';
+
+        if (empty($apiUrl) || empty($apiToken)) {
+            $this->session->set_flashdata('error', 'API do Whaticket não configurada. Configure no menu Configurações.');
+            redirect(site_url('vendas'));
+        }
+
+        $idVendas = $this->uri->segment(3);
+        $this->load->model('mapos_model');
+        $this->data['result'] = $this->vendas_model->getById($idVendas);
+
+        $zapnumber = preg_replace("/[^0-9]/", "", $this->data['result']->celular);
+        
+        if (empty($zapnumber)) {
+            $this->session->set_flashdata('error', 'O cliente não tem número de celular (WhatsApp) cadastrado.');
+            redirect(site_url('vendas/visualizar/') . $idVendas);
+        }
+
+        $this->data['produtos'] = $this->vendas_model->getProdutos($idVendas);
+        $this->data['emitente'] = $this->mapos_model->getEmitente();
+        
+        $totalProdutos = 0;
+        if($this->data['produtos']) {
+            foreach($this->data['produtos'] as $p) {
+                $totalProdutos += $p->subTotal;
+            }
+        }
+
+        $valorMostrado = ($this->data['result']->desconto != 0 && $this->data['result']->valor_desconto != 0) ? $this->data['result']->valor_desconto : $totalProdutos;
+        
+        $texto_de_notificacao = isset($_ENV['WHATICKET_MSG_VENDA']) && !empty($_ENV['WHATICKET_MSG_VENDA']) 
+            ? base64_decode($_ENV['WHATICKET_MSG_VENDA']) 
+            : "Olá {cliente_nome},\nSua Venda nº *{venda_id}* está com o status *{status}*.\n\nValor Total: *R$ {valor}*\n\nObservações: {observacoes}\n\n{emitente_nome} - {emitente_telefone}";
+
+        $troca = [
+            '{cliente_nome}' => $this->data['result']->nomeCliente,
+            '{venda_id}' => $this->data['result']->idVendas,
+            '{status}' => $this->data['result']->status,
+            '{valor}' => number_format($valorMostrado, 2, ',', '.'),
+            '{observacoes}' => strip_tags($this->data['result']->observacoes_cliente ?? ''),
+            '{emitente_nome}' => $this->data['emitente'] ? $this->data['emitente']->nome : '',
+            '{emitente_telefone}' => $this->data['emitente'] ? $this->data['emitente']->telefone : ''
+        ];
+        
+        $texto_de_notificacao = str_replace(array_keys($troca), array_values($troca), $texto_de_notificacao);
+
+        $numero = '55' . $zapnumber;
+
+        $payload = json_encode([
+            'number' => $numero,
+            'body' => $texto_de_notificacao
+        ]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, rtrim($apiUrl, '/') . '/api/messages/send');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiToken
+        ]);
+
+        $result = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpcode == 200 || $httpcode == 201) {
+            $this->session->set_flashdata('success', 'Mensagem enviada com sucesso ao cliente via Whaticket API!');
+            log_info('Enviou mensagem de venda via WhatsApp API para o cliente: ' . $this->data['result']->nomeCliente);
+        } else {
+            $this->session->set_flashdata('error', 'Falha ao enviar mensagem da venda via Whaticket API. Erro: ' . $result);
+        }
+
+        redirect(site_url('vendas/visualizar/') . $idVendas);
     }
 
     public function visualizarVenda($id)
