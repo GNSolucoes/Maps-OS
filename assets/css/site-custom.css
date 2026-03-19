@@ -1,0 +1,230 @@
+:root {
+  --primary-color: #ff9f43; /* Laranja Map-OS */
+  --primary-rgb: 255, 159, 67;
+  --primary-hover: #e67e22;
+  --dark-bg: #222f3e; /* Azul Escuro Fundo */
+  --darker-bg: #182029;
+  --text-light: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: #333;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Navbar Global */
+.navbar {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.navbar.scrolled {
+  background: #ffffff !important;
+  padding: 0.5rem 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: #222f3e;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.navbar-brand img {
+  max-height: 45px;
+}
+
+.navbar-brand span {
+  color: white !important;
+}
+
+.navbar-toggler span {
+  filter: invert(1);
+}
+
+.nav-link {
+  color: #222f3e !important;
+  font-weight: 500;
+  margin-left: 20px;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.navbar-brand span {
+  color: #222f3e !important;
+}
+
+.navbar-toggler span {
+  filter: none;
+  color: #222f3e;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.nav-link.active {
+  color: var(--primary-color) !important;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Page Header (Para páginas internas como Contato) */
+.page-header {
+  background: linear-gradient(135deg, #222f3e 0%, #1e272e 100%);
+  color: white;
+  padding: 140px 0 80px; /* Padding maior para compensar navbar fixed */
+  text-align: center;
+  position: relative;
+  margin-bottom: 0;
+}
+
+.page-header h1 {
+  font-weight: 700;
+  color: white;
+}
+
+.page-header p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+}
+
+/* Botoes Custom */
+.btn-primary-custom {
+  background: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary-custom:hover {
+  background: transparent;
+  color: var(--primary-color);
+  transform: translateY(-3px);
+}
+
+/* Footer Global */
+.custom-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  padding: 70px 0 30px;
+  margin-top: auto;
+}
+
+.custom-footer h5 {
+  color: white;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+.custom-footer a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.custom-footer a:hover {
+  color: white;
+}
+
+.social-links a {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  transition: all 0.3s;
+}
+
+.social-links a:hover {
+  background: var(--primary-color);
+  transform: translateY(-3px);
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.admin-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Cards e Elementos */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+/* Form Controls */
+.form-control {
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.15);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
