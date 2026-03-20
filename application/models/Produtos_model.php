@@ -106,4 +106,28 @@ class Produtos_model extends CI_Model
         
         return $this->db->get()->result();
     }
+
+    public function getHistoricoVendas($idProdutos)
+    {
+        $this->db->select('itens_de_vendas.*, vendas.dataVenda, clientes.nomeCliente as cliente');
+        $this->db->from('itens_de_vendas');
+        $this->db->join('vendas', 'vendas.idVendas = itens_de_vendas.vendas_id');
+        $this->db->join('clientes', 'clientes.idClientes = vendas.clientes_id', 'left');
+        $this->db->where('itens_de_vendas.produtos_id', $idProdutos);
+        $this->db->order_by('vendas.dataVenda', 'desc');
+        
+        return $this->db->get()->result();
+    }
+
+    public function getHistoricoOs($idProdutos)
+    {
+        $this->db->select('produtos_os.*, os.dataInicial, clientes.nomeCliente as cliente');
+        $this->db->from('produtos_os');
+        $this->db->join('os', 'os.idOs = produtos_os.os_id');
+        $this->db->join('clientes', 'clientes.idClientes = os.clientes_id', 'left');
+        $this->db->where('produtos_os.produtos_id', $idProdutos);
+        $this->db->order_by('os.dataInicial', 'desc');
+        
+        return $this->db->get()->result();
+    }
 }

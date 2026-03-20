@@ -83,18 +83,18 @@ class Produtos extends MY_Controller
             $precoVenda = $this->input->post('precoVenda');
             $precoVenda = str_replace(',', '', $precoVenda);
             $data = [
-                'codDeBarra' => set_value('codDeBarra'),
-                'descricao' => set_value('descricao'),
-                'marca' => set_value('marca'),
-                'modelo' => set_value('modelo'),
+                'codDeBarra' => empty($this->input->post('codDeBarra')) ? '789' . time() : $this->input->post('codDeBarra'),
+                'descricao' => $this->input->post('descricao'),
+                'marca' => $this->input->post('marca'),
+                'modelo' => $this->input->post('modelo'),
                 'foto' => $foto,
-                'unidade' => set_value('unidade'),
+                'unidade' => $this->input->post('unidade'),
                 'precoCompra' => $precoCompra,
                 'precoVenda' => $precoVenda,
-                'estoque' => set_value('estoque'),
-                'estoqueMinimo' => set_value('estoqueMinimo'),
-                'saida' => set_value('saida'),
-                'entrada' => set_value('entrada'),
+                'estoque' => $this->input->post('estoque') ?: 0,
+                'estoqueMinimo' => $this->input->post('estoqueMinimo') ?: 0,
+                'saida' => $this->input->post('saida') ? 1 : 0,
+                'entrada' => $this->input->post('entrada') ? 1 : 0,
             ];
 
             if ($this->produtos_model->add('produtos', $data) == true) {
@@ -105,6 +105,8 @@ class Produtos extends MY_Controller
                 $this->data['custom_error'] = '<div class="form_error"><p>An Error Occured.</p></div>';
             }
         }
+        $this->db->order_by('marca', 'asc');
+        $this->data['marcas'] = $this->db->get('marcas')->result();
         $this->data['view'] = 'produtos/adicionarProduto';
 
         return $this->layout();
@@ -150,17 +152,17 @@ class Produtos extends MY_Controller
             $precoVenda = $this->input->post('precoVenda');
             $precoVenda = str_replace(',', '', $precoVenda);
             $data = [
-                'codDeBarra' => set_value('codDeBarra'),
+                'codDeBarra' => empty($this->input->post('codDeBarra')) ? '789' . time() : $this->input->post('codDeBarra'),
                 'descricao' => $this->input->post('descricao'),
                 'marca' => $this->input->post('marca'),
                 'modelo' => $this->input->post('modelo'),
                 'unidade' => $this->input->post('unidade'),
                 'precoCompra' => $precoCompra,
                 'precoVenda' => $precoVenda,
-                'estoque' => $this->input->post('estoque'),
-                'estoqueMinimo' => $this->input->post('estoqueMinimo'),
-                'saida' => set_value('saida'),
-                'entrada' => set_value('entrada'),
+                'estoque' => $this->input->post('estoque') ?: 0,
+                'estoqueMinimo' => $this->input->post('estoqueMinimo') ?: 0,
+                'saida' => $this->input->post('saida') ? 1 : 0,
+                'entrada' => $this->input->post('entrada') ? 1 : 0,
             ];
 
             if ($foto) {
@@ -178,6 +180,8 @@ class Produtos extends MY_Controller
 
         $this->data['result'] = $this->produtos_model->getById($this->uri->segment(3));
 
+        $this->db->order_by('marca', 'asc');
+        $this->data['marcas'] = $this->db->get('marcas')->result();
         $this->data['view'] = 'produtos/editarProduto';
 
         return $this->layout();
@@ -203,6 +207,8 @@ class Produtos extends MY_Controller
         }
         
         $this->data['historicoCompras'] = $this->produtos_model->getHistoricoCompras($this->uri->segment(3));
+        $this->data['historicoVendas'] = $this->produtos_model->getHistoricoVendas($this->uri->segment(3));
+        $this->data['historicoOs'] = $this->produtos_model->getHistoricoOs($this->uri->segment(3));
 
         $this->data['view'] = 'produtos/visualizarProduto';
 

@@ -54,6 +54,7 @@
                         <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo $result->codDeBarra; ?>" />
+                            <button type="button" class="btn btn-success btn-mini" style="margin-left: 10px;" onclick="gerarCodigoDeBarras()"><i class="fas fa-barcode"></i> Gerar Código</button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -65,7 +66,13 @@
                     <div class="control-group">
                         <label for="marca" class="control-label">Marca</label>
                         <div class="controls">
-                            <input id="marca" type="text" name="marca" value="<?php echo $result->marca ?? ''; ?>" placeholder="Ex: Samsung, Apple" />
+                            <select id="marca" name="marca">
+                                <option value="">Selecione uma marca...</option>
+                                <?php foreach ($marcas as $marca) {
+                                    $selected = ($marca->marca == $result->marca) ? 'selected' : '';
+                                    echo '<option value="' . $marca->marca . '" ' . $selected . '>' . $marca->marca . '</option>';
+                                } ?>
+                            </select>
                         </div>
                     </div>
                     <div class="control-group">
@@ -118,7 +125,23 @@
                     <div class="control-group">
                         <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
                         <div class="controls">
-                            <select id="unidade" name="unidade" style="width: 15em;"></select>
+                            <select id="unidade" name="unidade" style="width: 15em;">
+                                <?php 
+                                $medidasJson = @file_get_contents(FCPATH . 'assets/json/tabela_medidas.json');
+                                if ($medidasJson) {
+                                    $medidas = json_decode($medidasJson)->medidas;
+                                    foreach ($medidas as $medida) {
+                                        $selected = ($result->unidade == $medida->sigla) ? 'selected' : '';
+                                        echo "<option value=\"{$medida->sigla}\" {$selected}>{$medida->descricao}</option>";
+                                    }
+                                } else {
+                                    echo "<option value=\"UN\"" . ($result->unidade == 'UN' ? ' selected' : '') . ">UNIDADE</option>";
+                                    echo "<option value=\"CX\"" . ($result->unidade == 'CX' ? ' selected' : '') . ">CAIXA</option>";
+                                    echo "<option value=\"KG\"" . ($result->unidade == 'KG' ? ' selected' : '') . ">QUILOGRAMA</option>";
+                                    echo "<option value=\"M\"" . ($result->unidade == 'M' ? ' selected' : '') . ">METRO</option>";
+                                }
+                                ?>
+                            </select>
                         </div>
                     </div>
 
@@ -159,6 +182,12 @@
 <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
+    function gerarCodigoDeBarras() {
+        var tempoSegundos = Math.floor(Date.now() / 1000).toString();
+        // Adiciona 789 (Brasil) + timestamp (13 dígitos)
+        $('#codDeBarra').val('789' + tempoSegundos);
+    }
+
     function calcLucro(precoCompra, Lucro) {
         var lucroTipo = $('#selectLucro').val();
         var precoVenda;
@@ -222,12 +251,6 @@
 
     $(document).ready(function() {
         $(".money").maskMoney();
-        $.getJSON('<?php echo base_url() ?>assets/json/tabela_medidas.json', function(data) {
-            for (i in data.medidas) {
-                $('#unidade').append(new Option(data.medidas[i].descricao, data.medidas[i].sigla));
-                $("#unidade option[value=" + '<?php echo $result->unidade; ?>' + "]").prop("selected", true);
-            }
-        });
         $('#formProduto').validate({
             rules: {
                 descricao: {

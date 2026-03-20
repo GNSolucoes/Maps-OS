@@ -104,5 +104,93 @@
             </div>
         </div>
     </div>
+    <div class="accordion-group widget-box">
+        <div class="accordion-heading">
+            <div class="widget-title">
+                <a data-parent="#collapse-group" href="#collapseGThree" data-toggle="collapse">
+                    <span class="icon"><i class="fas fa-shopping-cart"></i></span>
+                    <h5>Histórico de Vendas</h5>
+                </a>
+            </div>
+        </div>
+        <div class="collapse in accordion-body" id="collapseGThree">
+            <div class="widget-content">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unit.</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if(isset($historicoVendas) && !empty($historicoVendas)){
+                            foreach($historicoVendas as $venda){
+                                $dataVenda = date('d/m/Y', strtotime($venda->dataVenda));
+                                $total = $venda->quantidade * $venda->preco;
+                                echo '<tr>';
+                                echo '<td>'.$dataVenda.'</td>';
+                                echo '<td>'.$venda->cliente.'</td>';
+                                echo '<td>'.$venda->quantidade.'</td>';
+                                echo '<td>R$ '.number_format($venda->preco, 2, ',', '.').'</td>';
+                                echo '<td>R$ '.number_format($total, 2, ',', '.').'</td>';
+                                echo '</tr>';
+                            }
+                        } else {
+                            echo '<tr><td colspan="5">Nenhuma venda encontrada para este produto.</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-group widget-box">
+        <div class="accordion-heading">
+            <div class="widget-title">
+                <a data-parent="#collapse-group" href="#collapseGFour" data-toggle="collapse">
+                    <span class="icon"><i class="fas fa-clipboard"></i></span>
+                    <h5>Histórico de O.S.</h5>
+                </a>
+            </div>
+        </div>
+        <div class="collapse in accordion-body" id="collapseGFour">
+            <div class="widget-content">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unit.</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if(isset($historicoOs) && !empty($historicoOs)){
+                            foreach($historicoOs as $os){
+                                $dataOs = date('d/m/Y', strtotime($os->dataInicial));
+                                $total = $os->quantidade * $os->preco;
+                                echo '<tr>';
+                                echo '<td>'.$dataOs.'</td>';
+                                echo '<td>'.$os->cliente.'</td>';
+                                echo '<td>'.$os->quantidade.'</td>';
+                                echo '<td>R$ '.number_format($os->preco, 2, ',', '.').'</td>';
+                                echo '<td>R$ '.number_format($total, 2, ',', '.').'</td>';
+                                echo '</tr>';
+                            }
+                        } else {
+                            echo '<tr><td colspan="5">Nenhuma O.S. encontrada para este produto.</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>

@@ -48,6 +48,7 @@
                         <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo set_value('codDeBarra'); ?>" />
+                            <button type="button" class="btn btn-success btn-mini" style="margin-left: 10px;" onclick="gerarCodigoDeBarras()"><i class="fas fa-barcode"></i> Gerar Código</button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -59,7 +60,12 @@
                     <div class="control-group">
                         <label for="marca" class="control-label">Marca</label>
                         <div class="controls">
-                            <input id="marca" type="text" name="marca" value="<?php echo set_value('marca'); ?>" placeholder="Ex: Samsung, Apple" />
+                            <select id="marca" name="marca">
+                                <option value="">Selecione uma marca...</option>
+                                <?php foreach ($marcas as $marca) { ?>
+                                    <option value="<?php echo $marca->marca; ?>" <?php echo set_select('marca', $marca->marca); ?>><?php echo $marca->marca; ?></option>
+                                <?php } ?>
+                            </select>
                         </div>
                     </div>
                     <div class="control-group">
@@ -108,7 +114,22 @@
                     <div class="control-group">
                         <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
                         <div class="controls">
-                            <select id="unidade" name="unidade"></select>
+                            <select id="unidade" name="unidade">
+                                <?php 
+                                $medidasJson = @file_get_contents(FCPATH . 'assets/json/tabela_medidas.json');
+                                if ($medidasJson) {
+                                    $medidas = json_decode($medidasJson)->medidas;
+                                    foreach ($medidas as $medida) {
+                                        echo "<option value=\"{$medida->sigla}\" " . set_select('unidade', $medida->sigla) . ">{$medida->descricao}</option>";
+                                    }
+                                } else {
+                                    echo "<option value=\"UN\">UNIDADE</option>";
+                                    echo "<option value=\"CX\">CAIXA</option>";
+                                    echo "<option value=\"KG\">QUILOGRAMA</option>";
+                                    echo "<option value=\"M\">METRO</option>";
+                                }
+                                ?>
+                            </select>
                         </div>
                     </div>
                     <div class="control-group">
@@ -140,6 +161,12 @@
 <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
+    function gerarCodigoDeBarras() {
+        var tempoSegundos = Math.floor(Date.now() / 1000).toString();
+        // Adiciona 789 (Brasil) + timestamp (13 dígitos)
+        $('#codDeBarra').val('789' + tempoSegundos);
+    }
+
     function calcLucro(precoCompra, Lucro) {
         var lucroTipo = $('#selectLucro').val();
         var precoVenda;
@@ -200,11 +227,6 @@
 
     $(document).ready(function() {
         $(".money").maskMoney();
-        $.getJSON('<?php echo base_url() ?>assets/json/tabela_medidas.json', function(data) {
-            for (i in data.medidas) {
-                $('#unidade').append(new Option(data.medidas[i].descricao, data.medidas[i].sigla));
-            }
-        });
         $('#formProduto').validate({
             rules: {
                 descricao: {
