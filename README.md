@@ -33,7 +33,7 @@ Diferente da versão gratuita, aqui você leva um pacote de funcionalidades pron
 ### Participe da Nossa Comunidade
 
 Entre em nosso **Novo Canal** no Telegram para novidades exclusivas, atualizações e suporte direto:
-👉 [**Acessar Novo Canal do Telegram GNSoluções**](https://t.me/+_Zht4nhws0UzNTMx) 👈
+👉 [**Acessar Novo Canal do Telegram GNSoluções**](https://t.me/+R6XC1VzEfW4xMzYx) 👈
 ### Frameworks/Bibliotecas
 * [bcit-ci/CodeIgniter](https://github.com/bcit-ci/CodeIgniter)
 * [twbs/bootstrap](https://github.com/twbs/bootstrap)
