@@ -117,7 +117,7 @@ Requisitos
 
 Instalação
 
-git clone https://github.com/SEU-USUARIO/map-os-community.git
+git clone https://github.com/GNSolucoes/map-os-community.git
 
 cd map-os-community
 
