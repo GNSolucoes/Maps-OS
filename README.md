@@ -1,49 +1,198 @@
-# Map-OS: ERP para Assistências e Comércios (Versão Premium)
+Map-OS ERP Community Edition
 
-Este software é uma versão fortemente modificada e turbinada do aclamado sistema Mapos. Embora o núcleo do sistema seja baseado em código livre, esta versão foi desenvolvida pela nossa equipe para atender necessidades que o original não cobre, transformando-o em um ERP completo para assistências e comércios.
+«⚠️ Versão Não Oficial do MapOS
 
-### O que você recebe ao comprar esta versão:
-Diferente da versão gratuita, aqui você leva um pacote de funcionalidades prontas para uso imediato:
+Este projeto não possui vínculo oficial com o projeto MapOS original nem com seus mantenedores.
 
-- ✅ **Módulo de Equipamentos**: Controle detalhado do patrimônio e itens em manutenção.
-- ✅ **PDV (Frente de Caixa)**: Venda rápida e integrada ao estoque.
-- ✅ **Painel do Técnico**: Interface dedicada para sua equipe focar no serviço.
-- ✅ **Site Integrado com CMS**: Editor Rico (Word style), SEO automático e gerenciamento de Banners.
-- ✅ **Gestão de Compras**: Controle o que entra na empresa, não apenas o que sai.
-- ✅ **Comunicador Duplo**: Disparo de E-mails via SMTP e WhatsApp (via API do Whaticket) na mesma tela.
-- ✅ **Anexos Ilimitados**: Envio de imagens (JPG/PNG) e PDFs para seus clientes perfeitamente integrado.
-- ✅ **Gestão de Perfil**: Assinaturas de E-mail ricas e imagens do perfil ajustáveis.
+Trata-se de um fork comunitário que recebeu diversas modificações, melhorias e novos módulos ao longo dos anos para atender demandas reais de Assistências Técnicas, Lojas, Comércios e Prestadores de Serviços.
 
-#
-## Telas do Sistema
+O objetivo deste repositório é permitir que a comunidade participe ativamente da evolução do sistema através de sugestões, correções e novas funcionalidades.»
 
-<p align="center">
-  <img src="imgs/9UYy4wCETzw8ZCJxUDff.jpeg" alt="Imagem 1" width="100%">
-  <br><br>
-  <img src="imgs/ATCt28aERTeTP76Jaxao.jpeg" alt="Imagem 2" width="100%">
-  <br><br>
-  <img src="imgs/GzAjHYRb8xeKLpCplQLu.jpeg" alt="Imagem 3" width="100%">
-  <br><br>
-  <img src="imgs/PRp87rlVMTIUJTlziwfw.jpeg" alt="Imagem 4" width="100%">
-  <br><br>
-  <img src="imgs/awet5o4aZIdtODXS1Fpz.jpeg" alt="Imagem 5" width="100%">
-  <br><br>
-  <img src="imgs/nOIZ5FhhBuqENgpl5IY9.jpeg" alt="Imagem 6" width="100%">
-</p>
-### Participe da Nossa Comunidade
+---
 
-Entre em nosso **Novo Canal** no Telegram para novidades exclusivas, atualizações e suporte direto:
-👉 [**Acessar Novo Canal do Telegram GNSoluções**](https://t.me/+R6XC1VzEfW4xMzYx) 👈
-### Frameworks/Bibliotecas
-* [bcit-ci/CodeIgniter](https://github.com/bcit-ci/CodeIgniter)
-* [twbs/bootstrap](https://github.com/twbs/bootstrap)
-* [jquery/jquery](https://github.com/jquery/jquery)
-* [jquery/jquery-ui](https://github.com/jquery/jquery-ui)
-* [mpdf/mpdf](https://github.com/mpdf/mpdf)
-* [Matrix Admin](http://wrappixel.com/demos/free-admin-templates/matrix-admin/index.html)
-* [filp/whoops](https://github.com/filp/whoops)
+Sobre o Projeto
 
-### Requerimentos
-* PHP >= 8.3
-* MySQL >= 5.7 ou >= 8.0
-* Composer >= 2
+O Map-OS ERP Community Edition nasceu a partir do excelente projeto MapOS e foi expandido para se tornar uma solução mais completa para gestão empresarial.
+
+Diversos recursos foram adicionados ao longo do desenvolvimento, transformando o sistema em uma plataforma robusta para gerenciamento de ordens de serviço, vendas, estoque, compras, financeiro e relacionamento com clientes.
+
+Hoje o projeto encontra-se aberto à comunidade para que qualquer desenvolvedor possa contribuir com melhorias e novas funcionalidades.
+
+---
+
+Funcionalidades
+
+📋 Ordem de Serviço
+
+- Cadastro completo de Ordens de Serviço
+- Controle de status
+- Histórico de atendimentos
+- Impressão e PDF
+
+🖥️ Gestão de Equipamentos
+
+- Cadastro de equipamentos
+- Controle patrimonial
+- Histórico de manutenção
+- Vinculação com clientes
+
+🛒 PDV (Frente de Caixa)
+
+- Vendas rápidas
+- Integração com estoque
+- Controle de caixa
+
+📦 Estoque
+
+- Entrada e saída de produtos
+- Inventário
+- Movimentações
+- Controle de fornecedores
+
+🛍️ Compras
+
+- Pedidos de compra
+- Recebimento de mercadorias
+- Controle de fornecedores
+
+💰 Financeiro
+
+- Contas a pagar
+- Contas a receber
+- Fluxo de caixa
+- Relatórios financeiros
+
+👨‍🔧 Portal do Técnico
+
+- Área exclusiva para técnicos
+- Atualização de serviços
+- Acompanhamento de atendimentos
+
+📧 Comunicação Integrada
+
+- Envio de E-mails via SMTP
+- Integração com WhatsApp
+- Notificações automáticas
+
+📎 Gestão de Arquivos
+
+- Upload de imagens
+- Upload de documentos PDF
+- Anexos em Ordens de Serviço
+
+🌐 CMS Integrado
+
+- Gerenciamento de páginas
+- Editor visual
+- Gerenciamento de banners
+- Recursos básicos de SEO
+
+👥 Usuários e Permissões
+
+- Controle de acesso
+- Perfis personalizados
+- Gerenciamento de permissões
+
+---
+
+Tecnologias Utilizadas
+
+- PHP 8.3+
+- MySQL 5.7+
+- CodeIgniter
+- Bootstrap
+- jQuery
+- mPDF
+
+---
+
+Requisitos
+
+- PHP >= 8.3
+- MySQL >= 5.7
+- Composer >= 2
+- Apache ou Nginx
+
+---
+
+Instalação
+
+git clone https://github.com/SEU-USUARIO/map-os-community.git
+
+cd map-os-community
+
+composer install
+
+Configure o banco de dados e os parâmetros da aplicação conforme sua necessidade.
+
+---
+
+Como Contribuir
+
+Contribuições são sempre bem-vindas.
+
+Você pode ajudar através de:
+
+- Correção de bugs
+- Refatoração de código
+- Melhorias de performance
+- Novos módulos
+- Melhorias na documentação
+- Testes e validações
+
+Processo de Contribuição
+
+1. Faça um Fork do projeto
+2. Crie uma branch para sua melhoria
+3. Realize suas alterações
+4. Envie um Pull Request
+
+---
+
+Roadmap
+
+- [ ] API REST moderna
+- [ ] Integração PIX
+- [ ] Melhorias no PDV
+- [ ] Dashboard avançada
+- [ ] Aplicativo Mobile
+- [ ] Integração com NF-e
+- [ ] Integração com NFC-e
+- [ ] Melhorias de segurança
+- [ ] Ambiente Multiempresa
+
+---
+
+Agradecimentos
+
+Agradecimentos ao projeto MapOS original por disponibilizar uma excelente base open source que permitiu a criação e evolução desta versão comunitária.
+
+---
+
+Licença
+
+Este projeto segue os termos de licenciamento definidos neste repositório.
+
+Consulte o arquivo LICENSE para mais informações.
+
+---
+
+Comunidade
+
+Encontrou um bug?
+
+Tem alguma ideia de melhoria?
+
+Abra uma Issue ou envie um Pull Request.
+
+Toda contribuição é muito bem-vinda.
+
+---
+
+Desenvolvido inicialmente por GN Tecnologia
+
+Site: https://www.gnstecnologia.com.br
+
+WhatsApp: +55 (48) 99604-6486
+
+⭐ Se este projeto foi útil para você, considere deixar uma estrela no repositório para ajudar a comunidade a crescer.
